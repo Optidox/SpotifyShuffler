@@ -38,7 +38,7 @@ def make_auth_url():
     session['state_hash'] = generate_password_hash(state, 'sha256')
     params = {
         'client_id': os.environ.get('SPOTIFY_CLIENT_ID'),
-        'scope': 'playlist-modify-private playlist-modify-public user-library-read',
+        'scope': 'playlist-modify-private playlist-modify-public playlist-read-private user-library-read',
         'redirect_uri': os.environ.get('SPOTIFY_REDIRECT_URI'),
         'state': state,
         'response_type': 'code'

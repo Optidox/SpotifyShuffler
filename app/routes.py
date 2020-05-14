@@ -4,7 +4,7 @@ from app.forms import LoginForm
 from app.models import User
 from werkzeug.urls import url_parse
 from app.auth import make_auth_url, check_state, get_tokens, open_auth_url
-from app.api_calls import get_username
+from app.api_calls import get_username, get_all_playlists
 import sys
 import time
 
@@ -53,4 +53,10 @@ def callback():
 @app.route('/logout')
 def logout():
     # logout_user()
+    return redirect(url_for('index'))
+
+
+@app.route('/temp')
+def test_func():
+    get_all_playlists()
     return redirect(url_for('index'))
