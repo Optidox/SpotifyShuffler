@@ -1,10 +1,12 @@
-from flask import render_template, flash, redirect, url_for, request, abort
-from app import app
+from flask import render_template, flash, redirect, url_for, request, abort, session
+from app import app, db
 from app.forms import LoginForm
 from app.models import User
 from werkzeug.urls import url_parse
 from app.auth import make_auth_url, check_state, get_tokens, open_auth_url
+from app.api_calls import get_username
 import sys
+import time
 
 
 @app.route('/')
@@ -27,12 +29,28 @@ def callback():
     state = request.args.get('state', '')
     if not check_state(state):
         abort(403)
-    tokens = get_tokens(request.args.get('code'))
-    print(tokens['access_token'] + '??????' + tokens['refresh_token'], file=sys.stderr)
+    token_info = get_tokens(request.args.get('code'))
+    user_id = get_username(token_info['access_token'])
+    expiration_time = int(token_info['expires_in']) + int(time.time())
+    session['id'] = user_id
+    session.permanent = True
+    if User.query.get(user_id) is None:
+        new_user = User(id=user_id,
+                        access_token=token_info['access_token'],
+                        refresh_token=token_info['refresh_token'],
+                        expiration_time=expiration_time)
+        db.session.add(new_user)
+    else:
+        session['id'] = user_id
+        updating_user = User.query.get(user_id)
+        updating_user.access_token = token_info['access_token']
+        updating_user.refresh_token = token_info['refresh_token']
+        updating_user.expiration_time = expiration_time
+    db.session.commit()
     return redirect(url_for('index'))
 
 
 @app.route('/logout')
 def logout():
-    #logout_user()
+    # logout_user()
     return redirect(url_for('index'))
