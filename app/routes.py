@@ -1,12 +1,12 @@
 from flask import render_template, flash, redirect, url_for, request, abort, session
 from app import app, db
-from app.forms import LoginForm
 from app.models import User
 from werkzeug.urls import url_parse
 from app.auth import make_auth_url, check_state, get_tokens, open_auth_url
 from app.api_calls import get_username, get_all_playlists
 import sys
 import time
+from app.forms import LoginForm
 
 
 @app.route('/')
@@ -50,10 +50,10 @@ def callback():
     return redirect(url_for('index'))
 
 
-@app.route('/logout')
-def logout():
-    # logout_user()
-    return redirect(url_for('index'))
+@app.route('/shuffler', methods=['GET', 'POST'])
+def shuffler():
+    playlists  = g.current_user.get_user_playlists()
+    return render_template('shuffler.html', playlists=playlists)
 
 
 @app.route('/temp')

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Shuffler</h1>
+    <form action="" method="post" novalidate>
+        {% for playlist in playlists %}
+        {% name = playlist.name %}
+        {% id = playlist.playlist_id %}
+        <input type="checkbox" name="playlists" value="{{ id }}" id="{{ id }}">
+        <label for="{{ id }}">{{ name }}</label><br>
+        {% endfor %}
+    </form>
+{% endblock %}

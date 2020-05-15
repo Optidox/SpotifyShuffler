@@ -40,17 +40,35 @@ def get_all_playlists():
     payload = {'limit': '50',
                'offset': 0}
     response = requests.get("https://api.spotify.com/v1/me/playlists", headers=auth_header, params=payload)
+    playlists_info = response.json()
     has_next = True
+    playlists_in_db = Playlist.query.filter_by(user_id=g.current_user.id).all()
+
+    for playlist in playlists_in_db:
+        playlist.deleted = True
 
     while has_next:
-        playlists_info = response.json()
         for item in playlists_info['items']:
             playlist_id = item['id']
             playlist_name = item['name']
-            new_playlist = Playlist(playlist_id=playlist_id, name=playlist_name, user_id=g.current_user.id)
-            db.session.add(new_playlist)
+            current_playlist = Playlist.query.get(user_id=g.current_user.id, playlist_id=playlist_id)
+            if current_playlist is not None:
+                new_playlist = Playlist(playlist_id=playlist_id,
+                                        name=playlist_name,
+                                        user_id=g.current_user.id,
+                                        deleted=False)
+                db.session.add(new_playlist)
+            else:
+                current_playlist.name = playlist_name
+                current_playlist.deleted = False
         if playlists_info['next'] is not None:
             response = requests.get(playlists_info['next'], headers=auth_header)
+            playlists_info = response.json()
         else:
             has_next = False
+
+    db.session.commit()
+    for playlist in playlists_in_db:
+        if playlist.deleted is True:
+            db.session.delete(playlist)
     db.session.commit()
