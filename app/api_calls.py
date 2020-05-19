@@ -1,13 +1,9 @@
-import os
 from flask import g
 from app.auth import check_token
 from app.models import Playlist
 from app import db
 import requests
 from random import shuffle
-import webbrowser
-import logging
-import sys
 import json
 from itertools import chain
 
@@ -131,8 +127,6 @@ def make_shuffled_playlist(playlists):
     tracks = list(chain(*[_get_playlist_track_uris(playlist.playlist_id) for playlist in playlists]))
     shuffle(tracks)
 
-    print(tracks)
-    print(len(tracks))
     track_uris = {'uris': []}
     for i in range(1, len(tracks) + 1):
         track_uris['uris'].append(tracks[i-1])
@@ -141,7 +135,6 @@ def make_shuffled_playlist(playlists):
                           headers=auth_header,
                           data=json.dumps(track_uris))
             track_uris['uris'].clear()
-    print(len(track_uris['uris']))
     if len(track_uris['uris']) is not 0:
         requests.post('https://api.spotify.com/v1/playlists/%s/tracks' % shuffler_playlist_id,
                       headers=auth_header,

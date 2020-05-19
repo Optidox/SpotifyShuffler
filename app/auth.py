@@ -9,7 +9,6 @@ import requests
 import webbrowser
 import logging
 import time
-import sys
 from app import db
 
 

@@ -1,7 +1,6 @@
-from flask import render_template, flash, redirect, url_for, request, abort, session, g
+from flask import render_template, redirect, url_for, request, abort, session, g
 from app import app, db
 from app.models import User
-from werkzeug.urls import url_parse
 from app.auth import make_auth_url, check_state, get_tokens, open_auth_url
 from app.api_calls import get_username, get_all_playlists, create_shuffler_playlist, make_shuffled_playlist
 import sys

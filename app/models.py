@@ -1,5 +1,4 @@
 from app import db
-from flask import session
 
 
 class User(db.Model):
