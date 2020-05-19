@@ -30,7 +30,6 @@ def _refresh_token():
     g.current_user.access_token = token_json['access_token']
     g.current_user.expiration_time = int(token_json['expires_in']) + int(time.time())
     db.session.commit()
-    return None
 
 
 def make_auth_url():
@@ -56,7 +55,6 @@ def open_auth_url(auth_url):
         logger.info("Opened %s in your browser", auth_url)
     except webbrowser.Error:
         logger.error("Please navigate here: %s", auth_url)
-    return None
 
 
 def check_state(state):
@@ -82,4 +80,3 @@ def get_tokens(code):
 def check_token():
     if g.current_user.expiration_time < int(time.time()):
         _refresh_token()
-    return None

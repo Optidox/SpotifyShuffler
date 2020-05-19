@@ -1,17 +1,15 @@
-from urllib.parse import urlencode
 import os
-from uuid import uuid4
-from flask import session, g
+from flask import g
 from app.auth import check_token
 from app.models import Playlist
 from app import db
-import base64
-import six
-from werkzeug.security import generate_password_hash, check_password_hash
 import requests
+from random import shuffle
 import webbrowser
 import logging
 import sys
+import json
+from itertools import chain
 
 
 # Adapted from Spotipy (client.Spotify._auth_headers)
@@ -24,13 +22,51 @@ def _get_access_token():
     return g.current_user.access_token
 
 
+def _get_playlist_track_uris(playlist_id):
+    auth_header = _auth_header(_get_access_token())
+    response = requests.get('https://api.spotify.com/v1/playlists/%s/tracks' % playlist_id, headers=auth_header)
+    playlist_info = response.json()
+    tracks = []
+    has_next = True
+    while has_next:
+        for item in playlist_info['items']:
+            track_uri = item['track']['uri']
+            tracks.append(track_uri)
+        if playlist_info['next'] is not None:
+            response = requests.get(playlist_info['next'], headers=auth_header)
+            playlist_info = response.json()
+        else:
+            has_next = False
+    return tracks
+
+
+def _clear_shuffler_playlist():
+    auth_header = _auth_header(g.current_user.access_token)
+    auth_header['Content-Type'] = 'application/json'
+    shuffler_playlist_id = g.current_user.shuffler_playlist
+    tracks = _get_playlist_track_uris(g.current_user.shuffler_playlist)
+
+    track_uris = {'uris': []}
+    for i in range(1, len(tracks) + 1):
+        track_uris['uris'].append(tracks[i-1])
+        if i % 100 is 0:
+            requests.delete('https://api.spotify.com/v1/playlists/%s/tracks' % shuffler_playlist_id,
+                            headers=auth_header,
+                            data=json.dumps(track_uris))
+            track_uris['uris'].clear()
+    if len(track_uris['uris']) is not 0:
+        requests.delete('https://api.spotify.com/v1/playlists/%s/tracks' % shuffler_playlist_id,
+                        headers=auth_header,
+                        data=json.dumps(track_uris))
+
+
 def get_username(*args):
     if args:
         auth_header = _auth_header(args[0])
     else:
         auth_header = _auth_header(_get_access_token())
 
-    response = requests.get("https://api.spotify.com/v1/me", headers=auth_header)
+    response = requests.get('https://api.spotify.com/v1/me', headers=auth_header)
     user_info = response.json()
     return user_info['id']
 
@@ -51,8 +87,8 @@ def get_all_playlists():
         for item in playlists_info['items']:
             playlist_id = item['id']
             playlist_name = item['name']
-            current_playlist = Playlist.query.get(user_id=g.current_user.id, playlist_id=playlist_id)
-            if current_playlist is not None:
+            current_playlist = Playlist.query.filter_by(user_id=g.current_user.id, playlist_id=playlist_id).first()
+            if current_playlist is None:
                 new_playlist = Playlist(playlist_id=playlist_id,
                                         name=playlist_name,
                                         user_id=g.current_user.id,
@@ -72,3 +108,41 @@ def get_all_playlists():
         if playlist.deleted is True:
             db.session.delete(playlist)
     db.session.commit()
+
+
+def create_shuffler_playlist():
+    auth_header = _auth_header(_get_access_token())
+    auth_header['Content-Type'] = 'application/json'
+    payload = {'name': 'Shuffler',
+               'description': 'Playlist created by Shuffler',
+               'public': True}
+    response = requests.post('https://api.spotify.com/v1/users/%s/playlists' % g.current_user.id,
+                             headers=auth_header,
+                             data=json.dumps(payload))
+    playlist_info = response.json()
+    g.current_user.shuffler_playlist = playlist_info['id']
+
+
+def make_shuffled_playlist(playlists):
+    _clear_shuffler_playlist()
+    auth_header = _auth_header(g.current_user.access_token)
+    auth_header['Content-Type'] = 'application/json'
+    shuffler_playlist_id = g.current_user.shuffler_playlist
+    tracks = list(chain(*[_get_playlist_track_uris(playlist.playlist_id) for playlist in playlists]))
+    shuffle(tracks)
+
+    print(tracks)
+    print(len(tracks))
+    track_uris = {'uris': []}
+    for i in range(1, len(tracks) + 1):
+        track_uris['uris'].append(tracks[i-1])
+        if i % 100 is 0:
+            requests.post('https://api.spotify.com/v1/playlists/%s/tracks' % shuffler_playlist_id,
+                          headers=auth_header,
+                          data=json.dumps(track_uris))
+            track_uris['uris'].clear()
+    print(len(track_uris['uris']))
+    if len(track_uris['uris']) is not 0:
+        requests.post('https://api.spotify.com/v1/playlists/%s/tracks' % shuffler_playlist_id,
+                      headers=auth_header,
+                      data=json.dumps(track_uris))

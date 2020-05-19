@@ -12,6 +12,6 @@ def make_shell_context():
 @app.before_request
 def load_current_user():
     if 'id' in session and User.query.get(session['id']) is not None:
-        g.current_user = User.load_user(session['id'])
+        g.current_user = User.query.get(session['id'])
         check_token()
     return None

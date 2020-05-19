@@ -1,12 +1,12 @@
-from flask import render_template, flash, redirect, url_for, request, abort, session
+from flask import render_template, flash, redirect, url_for, request, abort, session, g
 from app import app, db
 from app.models import User
 from werkzeug.urls import url_parse
 from app.auth import make_auth_url, check_state, get_tokens, open_auth_url
-from app.api_calls import get_username, get_all_playlists
+from app.api_calls import get_username, get_all_playlists, create_shuffler_playlist, make_shuffled_playlist
 import sys
 import time
-from app.forms import LoginForm
+from app.webforms import LoginForm, ShufflerForm
 
 
 @app.route('/')
@@ -52,11 +52,15 @@ def callback():
 
 @app.route('/shuffler', methods=['GET', 'POST'])
 def shuffler():
-    playlists  = g.current_user.get_user_playlists()
-    return render_template('shuffler.html', playlists=playlists)
-
-
-@app.route('/temp')
-def test_func():
+    if g.current_user.shuffler_playlist is None:
+        create_shuffler_playlist()
     get_all_playlists()
-    return redirect(url_for('index'))
+
+    playlists = g.current_user.get_user_playlists()
+    form = ShufflerForm()
+    form.checkboxes.choices = [(playlist.name, playlist.name) for playlist in playlists]
+    if form.validate_on_submit():
+        selected_playlists = [playlist for playlist in playlists if playlist.name in form.checkboxes.data]
+        print(selected_playlists, file=sys.stderr)
+        make_shuffled_playlist(selected_playlists)
+    return render_template('shuffler.html', form=form)
