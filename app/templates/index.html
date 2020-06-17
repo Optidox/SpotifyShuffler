@@ -1,5 +1,57 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Hi, {{ User }}!</h1>
+<!-- First Parallax Image with Logo Text -->
+<div class="bgimg-1 w3-display-container w3-opacity-min" id="home">
+  <div class="w3-display-middle" style="white-space:nowrap;">
+    <span class="w3-center w3-padding-large w3-black w3-xlarge w3-wide w3-animate-opacity"><i class="fa fa-random"></i> FOR <i class="fab fa-spotify"></i></span>
+  </div>
+</div>
+
+<!-- Container (About Section) -->
+<div class="w3-content w3-container w3-padding-64" id="about" style="max-width:1280px">
+  <h2 class="w3-center w3-margin-bottom">ABOUT</h2>
+  <div class="w3-row">
+    <div class="w3-twothird w3-container">
+      <p><h4>Truly random shuffle</h4></p>
+      <p class="w3-large">By design, the Spotify shuffle function isn't random. For many people, its bias towards even spacing creates a more pleasant listening experience.
+         For some of us though, randomness⁠—with all its messiness, clustering, and occasional repetition⁠—keeps a playlist feeling alive and fresh listen after listen. For us, there's Shuffler.</p>
+    </div>
+  </div>
+  <div class="w3-row">
+    <div class="w3-third w3-container"></div>
+    <div class="w3-twothird w3-container">
+      <p><h4 class="w3-right-align">Under the hood</h4></p>
+      <p class="w3-right-align w3-large">Shuffler is a lightweight solution for creating random permutations of one or more Spotify playlists.
+        It uses the massively popular Mersenne Twister version MT19937 in order to achieve nearly perfect randomness for playlists of up to 2080 songs.</p>
+    </div>
+  </div>
+  <div class="w3-row">
+    <div class="w3-twothird w3-container">
+      <p><h4>How it works</h4></p>
+      <p class="w3-large">To access Shuffler, login with Spotify. We'll create a playlist called "Shuffler" for you. From there, go to Shuffler, select the playlist(s) you want to mix up, and hit Shuffle.
+        The new random shuffle will be uploaded to the Shuffler playlist, which can then be played in order.</p>
+    </div>
+  </div>
+</div>
+
+<p><h3 class="w3-center w3-padding-32">Shuffler is made with:</h3></p>
+<div class="w3-row w3-center w3-dark-grey w3-padding-16">
+  <div class="w3-quarter w3-section">
+    <i class="fab fa-python fa-lg"></i><br>
+    Python
+  </div>
+  <div class="w3-quarter w3-section">
+    <i class="fas fa-flask fa-lg"></i><br>
+    Flask
+  </div>
+  <div class="w3-quarter w3-section">
+    <i class="fas fa-database fa-lg"></i><br>
+    MySQL
+  </div>
+  <div class="w3-quarter w3-section">
+    <i class="fab fa-spotify fa-lg"></i><br>
+    Spotify API
+  </div>
+</div>
 {% endblock %}

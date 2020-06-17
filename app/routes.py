@@ -1,27 +1,26 @@
-from flask import render_template, redirect, url_for, request, abort, session, g
+from flask import render_template, redirect, url_for, request, abort, session, g, flash
 from app import app, db
 from app.models import User
 from app.auth import make_auth_url, check_state, get_tokens, open_auth_url
 from app.api_calls import get_username, get_all_playlists, create_shuffler_playlist, make_shuffled_playlist
-import sys
 import time
-from app.webforms import LoginForm, ShufflerForm
+from app.webforms import ShufflerForm
 
 
 @app.route('/')
 @app.route('/index')
 def index():
-    return render_template('index.html', title='Home', user=None)
+    try:
+        return render_template('index.html', title='Home', user=g.current_user)
+    except AttributeError:
+        return render_template('index.html', title='Home', user=None)
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    form = LoginForm()
-    if form.validate_on_submit():
-        auth_url = make_auth_url()
-        open_auth_url(auth_url)
-    return render_template('login.html', title='Sign In', form=form)
-
+    auth_url = make_auth_url()
+    open_auth_url(auth_url)
+    return redirect(url_for(index))
 
 @app.route('/callback')
 def callback():
@@ -51,15 +50,24 @@ def callback():
 
 @app.route('/shuffler', methods=['GET', 'POST'])
 def shuffler():
+    if not hasattr(g, 'current_user'):
+        flash("Please log in with Spotify before using Shuffler")
+        return redirect(url_for('index'))
+
     if g.current_user.shuffler_playlist is None:
         create_shuffler_playlist()
     get_all_playlists()
 
     playlists = g.current_user.get_user_playlists()
-    form = ShufflerForm()
-    form.checkboxes.choices = [(playlist.name, playlist.name) for playlist in playlists]
-    if form.validate_on_submit():
-        selected_playlists = [playlist for playlist in playlists if playlist.name in form.checkboxes.data]
-        print(selected_playlists, file=sys.stderr)
+    shuffler_form = ShufflerForm()
+    shuffler_form.playlists.choices = [(playlist.name, playlist.name) for playlist in playlists]
+    if shuffler_form.validate_on_submit():
+        selected_playlists = [playlist for playlist in playlists if playlist.name in shuffler_form.playlists.data]
         make_shuffled_playlist(selected_playlists)
-    return render_template('shuffler.html', form=form)
+    return render_template('shuffler.html', shuffler_form=shuffler_form, user=g.current_user)
+
+
+@app.route('/logout')
+def logout():
+    session.pop('id')
+    return redirect(url_for('index'))
