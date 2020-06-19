@@ -15,7 +15,9 @@ Python 3 and a web browser are all that's necessary for a local copy of Shuffler
 To create a working copy of Shuffler on your machine, do the following:
 
 1. Clone this repository with git
-2. Install the packages listed in [requirements.txt](requirements.txt) (usage of ```pip freeze``` is recommended)
+```git clone https://github.com/optidox/SpotifyShuffler```
+2. Install the packages listed in [requirements.txt](requirements.txt)
+```pip install -r requirements.txt```
 3. Create a .flaskenv file with the following structure:
 
 ```
