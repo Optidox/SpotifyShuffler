@@ -1,6 +1,6 @@
 # Shuffler for Spotify
 
-Shuffler is a user-friendly flask webapp for creating random permutations of one or more Spotify playlists.
+Shuffler is a user-friendly flask webapp for creating random permutations of one or more Spotify playlists. The live build is hosted at https://shufflerforspotify.com
 
 ## Getting Started
 
