@@ -6,10 +6,8 @@ import base64
 import six
 from werkzeug.security import generate_password_hash, check_password_hash
 import requests
-import webbrowser
-import logging
 import time
-from app import db
+from app import app, db
 
 
 # Code adapted from Spotipy (oauth2._make_authorization_headers)
@@ -44,16 +42,6 @@ def make_auth_url():
 
     url = 'https://accounts.spotify.com/authorize?' + urlencode(params)
     return url
-
-
-# Code adapted from Spotipy (oauth2._open_auth_url)
-def open_auth_url(auth_url):
-    logger = logging.getLogger(__name__)
-    try:
-        webbrowser.open(auth_url)
-        logger.info("Opened %s in your browser", auth_url)
-    except webbrowser.Error:
-        logger.error("Please navigate here: %s", auth_url)
 
 
 def check_state(state):

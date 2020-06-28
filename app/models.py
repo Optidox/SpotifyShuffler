@@ -3,9 +3,9 @@ from app import db
 
 class User(db.Model):
     id = db.Column(db.String(64), index=True, unique=True, primary_key=True)
-    access_token = db.Column(db.String(64))
+    access_token = db.Column(db.String(256))
     expiration_time = db.Column(db.Integer)
-    refresh_token = db.Column(db.String(64))
+    refresh_token = db.Column(db.String(256))
     shuffler_playlist = db.Column(db.String(64))
     playlists = db.relationship('Playlist', backref='id', lazy=True)
 

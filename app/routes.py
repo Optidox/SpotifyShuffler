@@ -1,7 +1,7 @@
 from flask import render_template, redirect, url_for, request, abort, session, g, flash
 from app import app, db
 from app.models import User
-from app.auth import make_auth_url, check_state, get_tokens, open_auth_url
+from app.auth import make_auth_url, check_state, get_tokens
 from app.api_calls import get_username, get_all_playlists, create_shuffler_playlist, make_shuffled_playlist
 import time
 from app.webforms import ShufflerForm
@@ -18,9 +18,7 @@ def index():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    auth_url = make_auth_url()
-    open_auth_url(auth_url)
-    return redirect(url_for(index))
+    return redirect(make_auth_url())
 
 @app.route('/callback')
 def callback():
