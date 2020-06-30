@@ -2,7 +2,7 @@ from flask import render_template, redirect, url_for, request, abort, session, g
 from app import app, db
 from app.models import User
 from app.auth import make_auth_url, check_state, get_tokens
-from app.api_calls import get_username, get_all_playlists, create_shuffler_playlist, make_shuffled_playlist
+from app.api_calls import get_username, get_all_playlists, make_shuffled_playlist
 import time
 from app.webforms import ShufflerForm
 
@@ -52,10 +52,7 @@ def shuffler():
         flash("Please log in with Spotify before using Shuffler")
         return redirect(url_for('index'))
 
-    if g.current_user.shuffler_playlist is None:
-        create_shuffler_playlist()
     get_all_playlists()
-
     playlists = g.current_user.get_user_playlists()
     shuffler_form = ShufflerForm()
     shuffler_form.playlists.choices = [(playlist.name, playlist.name) for playlist in playlists]

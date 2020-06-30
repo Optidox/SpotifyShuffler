@@ -1,7 +1,7 @@
 from flask import g
 from app.auth import check_token
 from app.models import Playlist
-from app import db
+from app import app, db
 import requests
 from random import shuffle
 import json
@@ -26,8 +26,9 @@ def _get_playlist_track_uris(playlist_id):
     has_next = True
     while has_next:
         for item in playlist_info['items']:
-            track_uri = item['track']['uri']
-            tracks.append(track_uri)
+            if item['is_local'] is False:
+                track_uri = item['track']['uri']
+                tracks.append(track_uri)
         if playlist_info['next'] is not None:
             response = requests.get(playlist_info['next'], headers=auth_header)
             playlist_info = response.json()
@@ -37,23 +38,10 @@ def _get_playlist_track_uris(playlist_id):
 
 
 def _clear_shuffler_playlist():
-    auth_header = _auth_header(g.current_user.access_token)
-    auth_header['Content-Type'] = 'application/json'
+    auth_header = _auth_header(_get_access_token())
     shuffler_playlist_id = g.current_user.shuffler_playlist
-    tracks = _get_playlist_track_uris(g.current_user.shuffler_playlist)
-
-    track_uris = {'uris': []}
-    for i in range(1, len(tracks) + 1):
-        track_uris['uris'].append(tracks[i-1])
-        if i % 100 is 0:
-            requests.delete('https://api.spotify.com/v1/playlists/%s/tracks' % shuffler_playlist_id,
-                            headers=auth_header,
-                            data=json.dumps(track_uris))
-            track_uris['uris'].clear()
-    if len(track_uris['uris']) is not 0:
-        requests.delete('https://api.spotify.com/v1/playlists/%s/tracks' % shuffler_playlist_id,
-                        headers=auth_header,
-                        data=json.dumps(track_uris))
+    response = requests.delete('https://api.spotify.com/v1/playlists/%s/followers' % shuffler_playlist_id, 
+                               headers=auth_header)
 
 
 def get_username(*args):
@@ -106,7 +94,8 @@ def get_all_playlists():
     db.session.commit()
 
 
-def create_shuffler_playlist():
+def _create_shuffler_playlist():
+    _clear_shuffler_playlist()
     auth_header = _auth_header(_get_access_token())
     auth_header['Content-Type'] = 'application/json'
     payload = {'name': 'Shuffler',
@@ -117,11 +106,12 @@ def create_shuffler_playlist():
                              data=json.dumps(payload))
     playlist_info = response.json()
     g.current_user.shuffler_playlist = playlist_info['id']
+    db.session.commit()
 
 
 def make_shuffled_playlist(playlists):
-    _clear_shuffler_playlist()
-    auth_header = _auth_header(g.current_user.access_token)
+    _create_shuffler_playlist()
+    auth_header = _auth_header(_get_access_token())
     auth_header['Content-Type'] = 'application/json'
     shuffler_playlist_id = g.current_user.shuffler_playlist
     tracks = list(chain(*[_get_playlist_track_uris(playlist.playlist_id) for playlist in playlists]))
