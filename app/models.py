@@ -18,7 +18,7 @@ class User(db.Model):
 
 class Playlist(db.Model):
     playlist_id = db.Column(db.String(64), primary_key=True)
-    name = db.Column(db.String(100))
+    name = db.Column(db.String(191))
     user_id = db.Column(db.String(64), db.ForeignKey('user.id'), primary_key=True)
     deleted = db.Column(db.Boolean)
 

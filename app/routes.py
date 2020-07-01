@@ -55,9 +55,9 @@ def shuffler():
     get_all_playlists()
     playlists = g.current_user.get_user_playlists()
     shuffler_form = ShufflerForm()
-    shuffler_form.playlists.choices = [(playlist.name, playlist.name) for playlist in playlists]
+    shuffler_form.playlists.choices = [(playlist.playlist_id, playlist.name) for playlist in playlists]
     if shuffler_form.validate_on_submit():
-        selected_playlists = [playlist for playlist in playlists if playlist.name in shuffler_form.playlists.data]
+        selected_playlists = [playlist for playlist in playlists if playlist.playlist_id in shuffler_form.playlists.data]
         make_shuffled_playlist(selected_playlists)
     return render_template('shuffler.html', shuffler_form=shuffler_form, user=g.current_user)
 

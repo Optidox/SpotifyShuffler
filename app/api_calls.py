@@ -26,7 +26,7 @@ def _get_playlist_track_uris(playlist_id):
     has_next = True
     while has_next:
         for item in playlist_info['items']:
-            if item['is_local'] is False:
+            if item['is_local'] is False and 'track' in item:
                 track_uri = item['track']['uri']
                 tracks.append(track_uri)
         if playlist_info['next'] is not None:
