@@ -6,6 +6,7 @@ import requests
 from random import shuffle
 import json
 from itertools import chain
+from datetime import datetime
 
 
 # Adapted from Spotipy (client.Spotify._auth_headers)
@@ -94,12 +95,13 @@ def get_all_playlists():
     db.session.commit()
 
 
-def _create_shuffler_playlist():
+def _create_shuffler_playlist(playlists):
     _clear_shuffler_playlist()
     auth_header = _auth_header(_get_access_token())
     auth_header['Content-Type'] = 'application/json'
+    creation_time = datetime.now()
     payload = {'name': 'Shuffler',
-               'description': 'Playlist created by Shuffler',
+            'description': f'Playlist created by Shuffler on {creation_time.strftime("%Y-%m-%d")} at {creation_time.strftime("%H:%M:%S")} UTC from these playlists: {", ".join([playlist.name for playlist in playlists])}',
                'public': True}
     response = requests.post('https://api.spotify.com/v1/users/%s/playlists' % g.current_user.id,
                              headers=auth_header,
@@ -110,7 +112,7 @@ def _create_shuffler_playlist():
 
 
 def make_shuffled_playlist(playlists):
-    _create_shuffler_playlist()
+    _create_shuffler_playlist(playlists)
     auth_header = _auth_header(_get_access_token())
     auth_header['Content-Type'] = 'application/json'
     shuffler_playlist_id = g.current_user.shuffler_playlist
