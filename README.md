@@ -45,7 +45,7 @@ Open your web browser and go to http://127.0.0.1:5000/ to use Shuffler.
 
 ## Built With
 
-* [Flask](https://flask.palletsprojects.com/en/1.1.x/) - Web framework; other palletsprojects were used to bridge Flask and other tools
+* [Flask](https://flask.palletsprojects.com/en/1.1.x/) - Web framework; multiple Pallets Projects were used to bridge Flask and other tools
 * [SQLAlchemy](https://www.sqlalchemy.org/) - Object Relational Mapper
 * [MySQL](https://dev.mysql.com/doc/) - Database
 * [W3.CSS](https://www.w3schools.com/w3css/) - CSS framework
