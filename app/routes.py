@@ -59,6 +59,7 @@ def shuffler():
     if shuffler_form.validate_on_submit():
         selected_playlists = [playlist for playlist in playlists if playlist.playlist_id in shuffler_form.playlists.data]
         make_shuffled_playlist(selected_playlists)
+        flash(f'Playlist{"" if len(selected_playlists) is 1 else "s"} shuffled successfully. Check your Spotify account for a playlist named Shuffler.')
     return render_template('shuffler.html', shuffler_form=shuffler_form, user=g.current_user)
 
 

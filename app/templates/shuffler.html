@@ -11,4 +11,14 @@
                 </div>
             </form>
         </div>
+	{% with message = get_flashed_messages() %}
+	    {% if message %}
+		<div class="w3-row">
+		    <div class="w3-quarter w3-container"></div>
+		    <div class="w3-half w3-container">
+			    <p class="w3-large w3-center">{{message[0]}}</p>
+	  	    </div>
+		</div>
+	    {% endif %}
+	{% endwith %}
 {% endblock %}

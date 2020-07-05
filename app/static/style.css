@@ -139,6 +139,7 @@ ul.ks-cboxtags li input[type="checkbox"]:checked + label {
 ul.ks-cboxtags li input[type="checkbox"] {
     display: absolute;
 }
+
 ul.ks-cboxtags li input[type="checkbox"] {
     position: absolute;
     opacity: 0;
