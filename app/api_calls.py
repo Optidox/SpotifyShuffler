@@ -20,6 +20,7 @@ def _get_access_token():
 
 
 def _get_playlist_track_uris(playlist_id):
+    app.logger.error(playlist_id)
     auth_header = _auth_header(_get_access_token())
     response = requests.get('https://api.spotify.com/v1/playlists/%s/tracks' % playlist_id, headers=auth_header)
     playlist_info = response.json()
@@ -27,7 +28,7 @@ def _get_playlist_track_uris(playlist_id):
     has_next = True
     while has_next:
         for item in playlist_info['items']:
-            if item['is_local'] is False and 'track' in item:
+            if item['is_local'] is False and 'track' in item and item['track'] is not None and 'uri' in item['track']:
                 track_uri = item['track']['uri']
                 tracks.append(track_uri)
         if playlist_info['next'] is not None:

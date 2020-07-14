@@ -140,6 +140,10 @@ ul.ks-cboxtags li input[type="checkbox"] {
     display: absolute;
 }
 
+ul.ks-cboxtags > li > input {
+  display: none;
+}
+
 ul.ks-cboxtags li input[type="checkbox"] {
     position: absolute;
     opacity: 0;
