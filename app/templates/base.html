@@ -6,7 +6,6 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
-    <script src="script/navbar.js"></script>
     <style>
         body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", raleway;}
     </style>
@@ -16,17 +15,31 @@
     <body>
         <div class="w3-top">
             <div class="w3-bar" id="myNavbar">
-                <a href="{{ url_for('index') }}" class="w3-bar-item w3-button">HOME</a>
-                <a href="{{ url_for('shuffler') }}" class="w3-bar-item w3-button"> SHUFFLER</a>
+                <a class="w3-bar-item w3-button w3-hover-black w3-hide-medium w3-hide-large" href="javascript:void(0);" title="Toggle Navigation Menu" id="bars">
+                    <i class="fa fa-bars"></i>
+                </a>
+                <a href="{{ url_for('index') }}" class="w3-bar-item w3-hide-small w3-button">HOME</a>
+                <a href="{{ url_for('shuffler') }}" class="w3-bar-item w3-hide-small w3-button"> SHUFFLER</a>
                 {% if user is none %}
-                    <a href="{{ url_for('login') }}" class="spotify-button"> Login with <i class="fab fa-spotify"></i></a>
+                    <a href="{{ url_for('login') }}" class="spotify-button w3-hide-small"> Login with <i class="fab fa-spotify"></i></a>
                 {% else %}
-                    <a href="{{ url_for('logout') }}" class="w3-bar-item w3-button"> LOGOUT</a>
+                    <a href="{{ url_for('logout') }}" class="w3-bar-item w3-hide-small w3-button"> LOGOUT</a>
                 {% endif %}
                 <a href="https://github.com/Optidox/SpotifyShuffler" class="w3-bar-item w3-right"><i class="fab fa-github"></i></a>
                 <a href="https://twitter.com/optidox" class="w3-bar-item w3-right"><i class="fab fa-twitter"></i></a>
             </div>
+
+            <div id="navDemo" class="w3-bar-block w3-white w3-hide w3-hide-large w3-hide-medium">
+                <a href="{{ url_for('index') }}" class="w3-bar-item w3-button">HOME</a>
+                <a href="{{ url_for('shuffler') }}" class="w3-bar-item w3-button">SHUFFLER</a>
+                {% if user is none %}
+                    <a href="{{ url_for('login') }}" class="spotify-button">Login with <i class="fab fa-spotify"></i></a>
+                {% else %}
+                    <a href="{{ url_for('logout') }}" class="w3-bar-item w3-button">LOGOUT</a>
+                {% endif %}
+            </div>
         </div>
         {% block content %}{% endblock %}
+        <script type="text/javascript" src="../static/navbar.js"></script>
     </body>
 </html>

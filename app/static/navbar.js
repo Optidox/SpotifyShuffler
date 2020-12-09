@@ -1,6 +1,4 @@
 // Change style of navbar on scroll
-console.log("fuckfuckfuckfukfrufuf");
-
 document.addEventListener("scroll", () => {
     let navbar = document.getElementById("myNavbar");
     if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
@@ -10,7 +8,7 @@ document.addEventListener("scroll", () => {
     }
 });
 
-/*// Used to toggle the menu on small screens when clicking on the menu button
+// Used to toggle the menu on small screens when clicking on the menu button
 document.getElementById("bars").addEventListener("click", () => {
     let x = document.getElementById("navDemo");
     if (x.className.indexOf("w3-show") == -1) {
@@ -18,4 +16,4 @@ document.getElementById("bars").addEventListener("click", () => {
     } else {
         x.className = x.className.replace(" w3-show", "");
     }
-});*/
+});
