@@ -8,7 +8,6 @@ from app.webforms import ShufflerForm
 
 
 @app.route('/')
-@app.route('/index')
 def index():
     try:
         return render_template('index.html', title='Home', user=g.current_user)
