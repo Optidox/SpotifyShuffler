@@ -3,7 +3,7 @@ from app import db
 
 class User(db.Model):
     id = db.Column(db.String(64), index=True, unique=True, primary_key=True)
-    access_token = db.Column(db.String(256))
+    access_token = db.Column(db.String(512))
     expiration_time = db.Column(db.Integer)
     refresh_token = db.Column(db.String(256))
     shuffler_playlist = db.Column(db.String(64))
